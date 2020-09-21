@@ -93,7 +93,7 @@ function App() {
                        key={item.id} 
                        column={item} 
                        ref={provided.innerRef}
-                       className=' bg-teal-100 h-20 my-2 round shadow w-auto p-4'
+                       className=' bg-green-100 h-20 my-2 round shadow w-auto p-4 hover:bg-green-200'
                         >
                        <p className=" text-justify ">{item.content}</p>
                        </div>
