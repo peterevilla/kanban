@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import Columns from "./components/Columns";
+import {onDragEnd} from './util/onDragEnd'
 
 const itemsFromBackend = [
   { id: "1", content: "First task" },
@@ -12,11 +12,11 @@ const itemsFromBackend = [
 
 const columnsFromBackend = {
   1: {
-    name: "Requested",
+    name: "Backlog",
     items: itemsFromBackend,
   },
   2: {
-    name: "To do",
+    name: "Development",
     items: [{ id: "6", content: "phantom task" }],
   },
   3: { name: "In Progress", items: [] },
@@ -26,47 +26,12 @@ const columnsFromBackend = {
   },
 };
 
-const onDragEnd = (result, columns, setColumns) => {
-  if (!result.destination) return;
-  const { source, destination } = result;
-
-  if (source.droppableId !== destination.droppableId) {
-    const sourceColumn = columns[source.droppableId];
-    const destColumn = columns[destination.droppableId];
-    const sourceItems = [...sourceColumn.items];
-    const destItems = [...destColumn.items];
-    const [removed] = sourceItems.splice(source.index, 1);
-    destItems.splice(destination.index, 0, removed);
-    setColumns({
-      ...columns,
-      [source.droppableId]: {
-        ...sourceColumn,
-        items: sourceItems
-      },
-      [destination.droppableId]: {
-        ...destColumn,
-        items: destItems
-      }
-    });
-  } else {
-    const column = columns[source.droppableId];
-    const copiedItems = [...column.items];
-    const [removed] = copiedItems.splice(source.index, 1);
-    copiedItems.splice(destination.index, 0, removed);
-    setColumns({
-      ...columns,
-      [source.droppableId]: {
-        ...column,
-        items: copiedItems
-      }
-    });
-  }
-};
 
 function App() {
   const [columns, setColumns] = useState(columnsFromBackend);
   return (
-    <div className=" flex  h-screen">
+    <div className=" flex flex-wrap  h-screen">
+      <h1 className=" text-gray-700  p-3" >Kanban<br/> Board</h1>
       <DragDropContext  onDragEnd={result => onDragEnd(result, columns, setColumns)}>
         {Object.entries(columns).map(([columnId, column], index) => (
           <Droppable droppableId={columnId}>
@@ -75,10 +40,10 @@ function App() {
                 {...provided.droppableProps}
                 ref={provided.innerRef}
                 className={`${
-                  snapshot.isDraggingOver ? "bg-yellow-200" : " bg-indigo-100"
+                  snapshot.isDraggingOver ? "bg-yellow-200" : " bg-gray-100"
                 } shadow-lg rounded-lg h-auto w-64 m-12`}
               >
-                <h1 className="text-center">{column.name}</h1>
+                <h1 className=" text-gray-600">{column.name}</h1>
                 {column.items.map((item, index) => (
                   
                   <Draggable 
@@ -93,7 +58,7 @@ function App() {
                        key={item.id} 
                        column={item} 
                        ref={provided.innerRef}
-                       className=' bg-green-100 h-20 my-2 rounded-md shadow w-auto p-4 hover:bg-green-200'
+                       className=' bg-blue-200 h-20 my-2 rounded-md shadow w-auto p-4 hover:bg-green-200'
                         >
                        <p className=" text-justify ">{item.content}</p>
                        </div>
