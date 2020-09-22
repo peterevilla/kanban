@@ -30,7 +30,7 @@ const columnsFromBackend = {
 function App() {
   const [columns, setColumns] = useState(columnsFromBackend);
   return (
-    <div className=" flex flex-wrap  h-screen">
+    <div className=" flex  h-screen">
       <h1 className=" text-gray-700  p-3" >Kanban<br/> Board</h1>
       <DragDropContext  onDragEnd={result => onDragEnd(result, columns, setColumns)}>
         {Object.entries(columns).map(([columnId, column], index) => (
