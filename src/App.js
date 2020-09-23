@@ -1,17 +1,9 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import {onDragEnd} from './util/onDragEnd'
-import { API, graphqlOperation } from 'aws-amplify'
-import * as queries from './graphql/queries';
+import { onDragEnd } from "./util/onDragEnd";
+import { API, graphqlOperation } from "aws-amplify";
+import * as queries from "./graphql/queries";
 
-
-const itemsFromBackend = [
-  { id: "1", content: "First task" },
-  { id: "2", content: "Second task" },
-  { id: "3", content: "Third task" },
-  { id: "4", content: "Fourth task" },
-  { id: "5", content: "Fifth task" },
-];
 const columnsFromBackend = {
   1: {
     name: "Backlog",
@@ -29,31 +21,29 @@ const columnsFromBackend = {
 };
 function App() {
   const [columns, setColumns] = useState(columnsFromBackend);
-  const [tasks, setTasks] = useState()
+  const [tasks, setTasks] = useState();
 
-
-const tasksFromAPI = async () => {
-  const response =  await API.graphql(graphqlOperation(queries.listTasks))
-    setTasks(response.data.listTasks.items) 
-    setColumns({...columns, 1: {items: response.data.listTasks.items, name: "Backlog" } })
-}  
-useEffect(() => {
-
-   tasksFromAPI()
-   
- 
-}, [])
-
-
- 
-  console.log(columns)
- 
-  
+  const tasksFromAPI = async () => {
+    const response = await API.graphql(graphqlOperation(queries.listTasks));
+    setTasks(response.data.listTasks.items);
+    setColumns({
+      ...columns,
+      1: { items: response.data.listTasks.items, name: "Backlog" },
+    });
+  };
+  useEffect(() => {
+    tasksFromAPI();
+  }, []);
 
   return (
     <div className=" flex flex-wrap lg:flex-no-wrap h-screen">
-      <h1 className=" text-gray-700  p-3" >Kanban<br/> Board</h1>
-      <DragDropContext  onDragEnd={result => onDragEnd(result, columns, setColumns)}>
+      <h1 className=" text-gray-700  p-3">
+        Kanban
+        <br /> Board
+      </h1>
+      <DragDropContext
+        onDragEnd={(result) => onDragEnd(result, columns, setColumns)}
+      >
         {Object.entries(columns).map(([columnId, column], index) => (
           <Droppable droppableId={columnId}>
             {(provided, snapshot) => (
@@ -66,23 +56,18 @@ useEffect(() => {
               >
                 <h1 className=" text-gray-600">{column.name}</h1>
                 {column.items.map((item, index) => (
-                  
-                  <Draggable 
-                  key={item.id}
-                  draggableId={item.id}
-                  index={index}
-                  >
+                  <Draggable key={item.id} draggableId={item.id} index={index}>
                     {(provided, snapshot) => (
                       <div
-                      {...provided.draggableProps}
-                      {...provided.dragHandleProps}
-                       key={item.id} 
-                       column={item} 
-                       ref={provided.innerRef}
-                       className=' bg-blue-200 h-20 my-2 rounded-md shadow w-auto p-4 hover:bg-green-200'
-                        >
-                       <p className=" text-justify ">{item.name}</p>
-                       </div>
+                        {...provided.draggableProps}
+                        {...provided.dragHandleProps}
+                        key={item.id}
+                        column={item}
+                        ref={provided.innerRef}
+                        className=" bg-blue-200 h-20 my-2 rounded-md shadow w-auto p-4 hover:bg-green-200"
+                      >
+                        <p className=" text-justify ">{item.name}</p>
+                      </div>
                     )}
                   </Draggable>
                 ))}
